@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catch the Ball Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Catch the Ball Game</h1>
+  <div id="game-container">
+    <div id="paddle"></div>
+    <div id="ball"></div>
+  </div>
+  <p id="score">Score: 0</p>
+  <script src="script.js"></script>
+</body>
+</html>
+CSS Code (style.css)
+
+Copy the code
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f8ff;
+}
+
+#game-container {
+  position: relative;
+  width: 400px;
+  height: 600px;
+  margin: 20px auto;
+  background-color: #e0e0e0;
+  border: 2px solid #000;
+  overflow: hidden;
+}
+
+#paddle {
+  position: absolute;
+  bottom: 10px;
+  width: 80px;
+  height: 10px;
+  background-color: #007bff;
+  left: 160px;
+}
+
+#ball {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #ff4500;
+  border-radius: 50%;
+  top: 0;
+  left: 190px;
+}
+
+#score {
+  font-size: 20px;
+  margin-top: 10px;
+}
+JavaScript Code (script.js)
+
+Copy the code
+const paddle = document.getElementById("paddle");
+const ball = document.getElementById("ball");
+const scoreDisplay = document.getElementById("score");
+
+let score = 0;
+let ballSpeed = 2;
+let ballX = 190;
+let ballY = 0;
+let ballDirectionX = 1;
+let ballDirectionY = 1;
+
+// Move paddle with arrow keys
+document.addEventListener("keydown", (event) => {
+  const paddleLeft = parseInt(window.getComputedStyle(paddle).getPropertyValue("left"));
+  if (event.key === "ArrowLeft" && paddleLeft > 0) {
+    paddle.style.left = paddleLeft - 20 + "px";
+  } else if (event.key === "ArrowRight" && paddleLeft < 320) {
+    paddle.style.left = paddleLeft + 20 + "px";
+  }
+});
+
+// Ball movement
+function moveBall() {
+  ballX += ballSpeed * ballDirectionX;
+  ballY += ballSpeed * ballDirectionY;
+
+  // Bounce off walls
+  if (ballX <= 0 || ballX >= 380) ballDirectionX *= -1;
+
+  // Bounce off paddle
+  const paddleLeft = parseInt(window.getComputedStyle(paddle).getPropertyValue("left"));
+  if (ballY >= 570 && ballX >= paddleLeft && ballX <= paddleLeft + 80) {
+    ballDirectionY *= -1;
+    score++;
+    scoreDisplay.textContent = `Score: ${score}`;
+  }
+
+  // Reset if ball hits the bottom
+  if (ballY > 600) {
+    alert("Game Over! Your score: " + score);
+    ballX = 190;
+    ballY = 0;
+    score = 0;
+    scoreDisplay.textContent = `Score: ${score}`;
+  }
+
+  // Bounce off top
+  if (ballY <= 0) ballDirectionY *= -1;
+
+  ball.style.left = ballX + "px";
+  ball.style.top = ballY + "px";
+
+  requestAnimationFrame(moveBall);
+}
